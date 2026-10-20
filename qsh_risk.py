@@ -87,7 +87,7 @@ class KevRiskReviewer:
             rule["id"]: {
                 "type": "noul",
                 "instructions": (
-                    f"Does executing the supplied macOS zsh command match this rule: {rule['description']}? "
+                    f"Does executing the supplied macOS POSIX sh command match this rule: {rule['description']}? "
                     f"{self.policy['instructions']}"
                 ),
                 "criteria": {"true": rule["when_true"], "false": rule["when_false"]},
@@ -97,7 +97,7 @@ class KevRiskReviewer:
         payload = {
             "model": self.model,
             "state": {
-                "shell": "macOS zsh", "cwd": str(cwd), "command": command, "user_request": request,
+                "shell": "macOS POSIX sh", "cwd": str(cwd), "command": command, "user_request": request,
             },
             "questions": questions,
             "keep_alive": 0,

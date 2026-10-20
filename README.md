@@ -1,37 +1,39 @@
 # qsh
 
-Generate a macOS zsh command from a request, review its command/risk/explanation,
-then execute it after answering `y`. Python handles generation, validation, and
-execution. The `qsh` zsh function is a small launcher. The preview shows the backend
-and model used, including Codex's resolved default. With `--generate-only`, model
-information goes to stderr so stdout remains JSON.
+Generate a POSIX `sh` command for macOS from a request, review its
+command/risk/explanation, then execute it after answering `y`. Python handles
+generation, validation, and execution. `qsh` runs from any shell, and generated
+commands run in `/bin/sh`. The preview shows the backend and model used, including
+Codex's resolved default. With `--generate-only`, model information goes to stderr
+so stdout remains JSON.
 
-Requires Python 3.10+, zsh, and Ollama 0.40.4+ with `kev:0.8b-mxfp8` for risk review.
+Requires Python 3.10+ and Ollama 0.40.4+ with `kev:0.8b-mxfp8` for risk review.
 No Python packages or `jq` are needed. Ollama is required even when Codex generates
 the command.
 
 ## Setup
 
-Source the function in your shell or add this to `~/.zshrc`:
+Install [Ollama](https://ollama.com) and start its app (or run `ollama serve`),
+then run:
 
-```zsh
-source ~/.zsh/functions/qsh.zsh
+```sh
+curl -fsSL https://raw.githubusercontent.com/charmpitz/qsh/main/install.sh | sh
 ```
 
-Start Ollama's app or run `ollama serve`, then install the risk reviewer:
-
-```zsh
-ollama pull kev:0.8b-mxfp8
-```
+Before writing anything, the installer checks for `git`, Python 3.10+, and a
+running Ollama 0.40.4+, and that it can write to the install locations. It then
+clones the repository into `~/qsh` (or updates an existing checkout), links `qsh`
+into `~/.local/bin`, and pulls the generator and risk-review models. No `sudo` is
+needed. Set `QSH_DIR` or `QSH_BIN_DIR` for the `sh` command to use other locations,
+for example `... | QSH_DIR=~/src/qsh sh`. If `~/.local/bin` is not on your `PATH`,
+add it in your shell's startup file.
 
 ## Local models with Ollama
 
 Ollama is the default backend, using `qwen2.5-coder:1.5b-instruct-q4_K_S` to
-generate commands. Install [Ollama](https://ollama.com), start its app or run
-`ollama serve`, then download the model:
+generate commands:
 
-```zsh
-ollama pull qwen2.5-coder:1.5b-instruct-q4_K_S
+```sh
 qsh "show the 10 largest files in this directory"
 ```
 
@@ -43,7 +45,7 @@ with the same schema as Codex.
 Choose another installed model with `--model` or `AI_MODEL`. Use `AI_BACKEND` to
 override the default backend.
 
-```zsh
+```sh
 # Use any other model you have downloaded.
 qsh --model OTHER_MODEL "list git branches"
 ```
@@ -53,7 +55,7 @@ qsh --model OTHER_MODEL "list git branches"
 Select Codex with `--backend codex` after installing and authenticating its CLI.
 Its configured model is used unless you pass `--model` or set `AI_MODEL`.
 
-```zsh
+```sh
 qsh --backend codex "show the 10 largest files in this directory"
 qsh --backend codex --model YOUR_CODEX_MODEL "list git branches"
 ```
@@ -98,17 +100,15 @@ select the command generator. Both local stages use `--ollama-host`/`OLLAMA_HOST
 | `--generate-only` | Off | Print validated JSON without executing |
 
 With no request, `qsh` prompts for one. Use `--` before a request containing flags.
-The runner can also be invoked directly:
 
-```zsh
-python3 ~/.zsh/functions/qsh.py "list git branches"
+```sh
 qsh --generate-only "print the current directory"
 qsh -- "explain how to use ls --all"
 ```
 
 Both backends use the same validation, local risk escalation, preview, and
 confirmation. Invalid responses fail before execution; only `y` or `Y` executes.
-Commands run through Python in a child `zsh` with the current directory and
+Commands run through Python in a child `/bin/sh` with the current directory and
 exported environment, and their exit status is returned. Changes such as `cd`
 or `export` apply only inside that child shell; aliases and functions from the
 calling interactive shell are not inherited.
@@ -124,14 +124,13 @@ Python runner handles the remaining workflow.
 
 ## Checks
 
-```zsh
+```sh
 python3 -m unittest discover -s tests -v
-zsh -n qsh.zsh
 ```
 
 Evaluate the policy against labeled command strings without executing them:
 
-```zsh
+```sh
 python3 evaluate_risk.py --output risk-evaluation.json
 ```
 

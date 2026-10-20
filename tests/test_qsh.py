@@ -116,10 +116,10 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
 
     def cli(self, *args, input="", wrapper=False):
         if wrapper:
-            command = [
-                "zsh", "-f", "-c", 'source "$1"; shift; qsh "$@"',
-                "zsh", str(ROOT / "qsh.zsh"), *args,
-            ]
+            link = self.cwd / "bin" / "qsh"
+            link.parent.mkdir(exist_ok=True)
+            link.symlink_to(ROOT / "qsh.py")
+            command = [str(link), *args]
         else:
             command = [sys.executable, str(ROOT / "qsh.py"), *args]
         return subprocess.run(
@@ -202,8 +202,8 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertFalse(self.marker.exists())
 
-    def test_confirmed_command_uses_zsh_cwd_and_returns_status(self):
-        self.suggestion["command"] = '[[ $ZSH_VERSION ]] && print -r -- "$PWD" > executed; exit 23'
+    def test_confirmed_command_uses_sh_cwd_and_returns_status(self):
+        self.suggestion["command"] = '[ -z "${ZSH_VERSION-}" ] && printf "%s\\n" "$PWD" > executed; exit 23'
         self.set_response(self.suggestion)
         for backend in ("codex", "ollama"):
             with self.subTest(backend=backend):

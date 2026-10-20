@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate, review, and execute a zsh command using a selectable model backend."""
+"""Generate, review, and execute a POSIX sh command using a selectable model backend."""
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ class Suggestion:
 
 
 def build_prompt(request: str, cwd: Path) -> str:
-    return f"""You are a shell command generator for macOS zsh.
+    return f"""You are a shell command generator for POSIX sh on macOS.
 
 Current working directory:
 {cwd}
@@ -68,7 +68,7 @@ Do not execute anything.
 Do not modify anything.
 Do not access the network.
 
-Generate exactly ONE zsh command that fulfills the request.
+Generate exactly ONE POSIX sh command that fulfills the request. Do not use bash or zsh extensions.
 Assess the real risk of executing it.
 Explain briefly what it does.
 Return only JSON matching this schema, with no markdown or extra text:
@@ -178,7 +178,7 @@ def run(args: argparse.Namespace) -> int:
         return 0
 
     print(f"\n$ {style(suggestion.command, '32')}\n", flush=True)
-    result = subprocess.run(["zsh", "-c", suggestion.command], check=False)
+    result = subprocess.run(["/bin/sh", "-c", suggestion.command], check=False)
     return result.returncode if result.returncode >= 0 else 128 - result.returncode
 
 
