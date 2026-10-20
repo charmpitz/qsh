@@ -1,0 +1,17 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "command": {
+            "type": "string"
+        },
+        "risk": {
+            "type": "string",
+            "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
+        },
+        "explanation": {
+            "type": "string"
+        }
+    },
+    "required": ["command", "risk", "explanation"]
+}
