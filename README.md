@@ -1,13 +1,16 @@
 # qsh
 
-Generate a POSIX `sh` command for macOS from a request, review its
+Generate a POSIX `sh` command for Linux or macOS from a request, review its
 command/risk/explanation, then execute it after answering `y`. Python handles
 generation, validation, and execution. `qsh` runs from any shell, and generated
-commands run in `/bin/sh`. The preview shows the backend and model used, including
+commands run in `/bin/sh`. The target platform is detected automatically and can
+be overridden with `--platform`. The preview shows the backend and model used, including
 Codex's resolved default. With `--generate-only`, model information goes to stderr
 so stdout remains JSON.
 
-Requires Python 3.10+ and Ollama 0.40.4+ with `kev:0.8b-mxfp8` for risk review.
+Requires Python 3.10+ and Ollama 0.40.4+. The Linux defaults are
+`qwen2.5:3b-instruct` and `kev:0.8b-q8_0`; macOS retains
+`qwen2.5-coder:1.5b-instruct-q4_K_S` and `kev:0.8b-mxfp8`.
 No Python packages or `jq` are needed. Ollama is required even when Codex generates
 the command.
 
@@ -30,8 +33,8 @@ add it in your shell's startup file.
 
 ## Local models with Ollama
 
-Ollama is the default backend, using `qwen2.5-coder:1.5b-instruct-q4_K_S` to
-generate commands:
+Ollama selects models for the target platform: `qwen2.5:3b-instruct` on Linux,
+or the original `qwen2.5-coder:1.5b-instruct-q4_K_S` on macOS, to generate commands:
 
 ```sh
 qsh "show the 10 largest files in this directory"
@@ -62,7 +65,8 @@ qsh --backend codex --model YOUR_CODEX_MODEL "list git branches"
 
 ## Risk review with Kev
 
-Every valid generated command is independently reviewed by `kev:0.8b-mxfp8` through
+Every valid generated command is independently reviewed by the target platform's Kev
+model (`kev:0.8b-q8_0` on Linux; the original `kev:0.8b-mxfp8` on macOS) through
 Ollama's [System One API](https://docs.ollama.com/api/systemone), including with
 `--generate-only`. Kev is a decision model, so it scores each rule rather than
 generating a command or a free-form explanation. The preview shows both models.
@@ -93,9 +97,10 @@ select the command generator. Both local stages use `--ollama-host`/`OLLAMA_HOST
 | Option | Default | Purpose |
 | --- | --- | --- |
 | `--backend` | `AI_BACKEND` or `ollama` | Select `codex` or `ollama` |
-| `--model` | `AI_MODEL`, then backend default | Select a model |
-| `--risk-model` | `AI_RISK_MODEL` or `kev:0.8b-mxfp8` | Select the Ollama decision model for risk review |
+| `--model` | `AI_MODEL`, then target-platform default | Select a model |
+| `--risk-model` | `AI_RISK_MODEL`, then target-platform default | Select the Ollama decision model for risk review |
 | `--ollama-host` | `OLLAMA_HOST` or `http://127.0.0.1:11434` | Select an Ollama server |
+| `--platform` | `QSH_PLATFORM` or `auto` | Target `linux` or `macos`; auto-detect by default |
 | `--timeout` | `180` | Timeout in seconds for each generation or risk-review request |
 | `--generate-only` | Off | Print validated JSON without executing |
 
@@ -103,6 +108,7 @@ With no request, `qsh` prompts for one. Use `--` before a request containing fla
 
 ```sh
 qsh --generate-only "print the current directory"
+qsh --platform macos "show the size of this file"
 qsh -- "explain how to use ls --all"
 ```
 

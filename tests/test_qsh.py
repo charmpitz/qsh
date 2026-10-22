@@ -36,7 +36,10 @@ class OllamaHandler(BaseHTTPRequestHandler):
         else:
             self.server.generation_requests.append(request)
             status = self.server.response_status
-            body = self.server.response_body
+            body = (
+                self.server.generation_responses.pop(0)
+                if self.server.generation_responses else self.server.response_body
+            )
         self.send_response(status)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
@@ -101,6 +104,7 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
         self.server.generation_requests = []
         self.server.risk_requests = []
         self.server.response_status = 200
+        self.server.generation_responses = []
         self.server.risk_status = 200
         self.server.risk_response = None
         self.server.risk_probabilities = {}
@@ -138,7 +142,7 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(json.loads(result.stdout), self.suggestion)
         self.assertIn("Model: codex / example-model", result.stderr)
-        self.assertIn("Risk reviewer: ollama / kev:0.8b-mxfp8", result.stderr)
+        self.assertIn("Risk reviewer: ollama / kev:0.8b-q8_0", result.stderr)
         log = json.loads(self.log.read_text())
         args = log["args"]
         self.assertEqual(args[0], "exec")
@@ -161,11 +165,26 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
         request = self.server.generation_requests[0]
         self.assertEqual(request["path"], "/api/chat")
         payload = request["payload"]
-        self.assertEqual(payload["model"], "qwen2.5-coder:1.5b-instruct-q4_K_S")
+        self.assertEqual(payload["model"], "qwen2.5:3b-instruct")
         self.assertFalse(payload["stream"])
         self.assertEqual(payload["format"], json.loads((ROOT / "qsh-command-schema.json").read_text()))
+        self.assertEqual(payload["format"]["properties"]["command"]["minLength"], 1)
+        self.assertEqual(payload["format"]["properties"]["explanation"]["minLength"], 1)
         self.assertIn(str(self.cwd), payload["messages"][0]["content"])
         self.assertFalse(self.log.exists())
+
+    def test_platform_override_changes_generation_guidance(self):
+        result = self.cli("--platform", "macos", "--generate-only", "list files")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        generation = self.server.generation_requests[-1]["payload"]
+        prompt = generation["messages"][0]["content"]
+        self.assertIn("Target platform: macOS.", prompt)
+        self.assertIn("Do not use GNU-only options", prompt)
+        self.assertNotIn("Target platform: Linux.", prompt)
+        self.assertEqual(generation["model"], "qwen2.5-coder:1.5b-instruct-q4_K_S")
+        review = self.server.risk_requests[-1]["payload"]
+        self.assertEqual(review["model"], "kev:0.8b-mxfp8")
+        self.assertEqual(review["state"]["shell"], "macOS POSIX sh")
 
     def test_environment_defaults_and_cli_override(self):
         self.env.update({
@@ -232,6 +251,20 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
                     self.assertNotIn("Execute this command?", result.stdout)
                     self.assertNotIn("Traceback", result.stderr)
 
+    def test_ollama_retries_an_empty_required_field(self):
+        self.server.generation_responses = [
+            json.dumps({"message": {"content": json.dumps({
+                **self.suggestion, "explanation": "",
+            })}}),
+            json.dumps({"message": {"content": json.dumps(self.suggestion)}}),
+        ]
+        result = self.cli(*self.backend_args("ollama"), "list files")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(len(self.server.generation_requests), 2)
+        retry_prompt = self.server.generation_requests[-1]["payload"]["messages"][0]["content"]
+        self.assertIn("explanation", retry_prompt)
+        self.assertIn("previous response was invalid", retry_prompt)
+
     def test_local_risk_escalation_applies_to_both_backends(self):
         for backend in ("codex", "ollama"):
             for command in (
@@ -258,7 +291,7 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
                 self.assertEqual(suggestion["risk"], "HIGH")
                 self.assertIn("Deletes data", suggestion["explanation"])
                 review = self.server.risk_requests[-1]["payload"]
-                self.assertEqual(review["model"], "kev:0.8b-mxfp8")
+                self.assertEqual(review["model"], "kev:0.8b-q8_0")
                 self.assertEqual(review["state"]["command"], self.suggestion["command"])
                 self.assertEqual(review["state"]["user_request"], "clean logs")
                 self.assertEqual(review["state"]["cwd"], str(self.cwd))
@@ -341,7 +374,7 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
         result = self.cli(input="list files\nn\n", wrapper=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("Cancelled", result.stdout)
-        self.assertIn("MODEL\n  ollama / qwen2.5-coder:1.5b-instruct-q4_K_S", result.stdout)
+        self.assertIn("MODEL\n  ollama / qwen2.5:3b-instruct", result.stdout)
         self.assertIn("list files", self.server.generation_requests[-1]["payload"]["messages"][0]["content"])
         self.assertFalse(self.log.exists())
 
@@ -361,7 +394,7 @@ response_file.write_text(Path(os.environ["TEST_RESPONSE"]).read_text())
         self.server.response_body = json.dumps({"error": "model not found"})
         result = self.cli(*self.backend_args("ollama"), "list files", input="y\n")
         self.assertEqual(result.returncode, 1, result.stderr)
-        self.assertIn("ollama pull qwen2.5-coder:1.5b-instruct-q4_K_S", result.stderr)
+        self.assertIn("ollama pull qwen2.5:3b-instruct", result.stderr)
         self.assertNotIn("Execute this command?", result.stdout)
 
     def test_malformed_ollama_envelopes_fail_cleanly(self):

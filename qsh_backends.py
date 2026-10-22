@@ -14,12 +14,23 @@ from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 
-DEFAULT_OLLAMA_MODEL = "qwen2.5-coder:1.5b-instruct-q4_K_S"
+LINUX_OLLAMA_MODEL = "qwen2.5:3b-instruct"
+MACOS_OLLAMA_MODEL = "qwen2.5-coder:1.5b-instruct-q4_K_S"
+# Preserve the Linux value for callers that do not select a target platform.
+DEFAULT_OLLAMA_MODEL = LINUX_OLLAMA_MODEL
 DEFAULT_OLLAMA_HOST = "http://127.0.0.1:11434"
 
 
 class BackendError(Exception):
     """A backend could not produce a response."""
+
+
+def default_ollama_model(target_platform: str) -> str:
+    """Return the bundled command-generation model for a supported target."""
+    return {
+        "linux": LINUX_OLLAMA_MODEL,
+        "macos": MACOS_OLLAMA_MODEL,
+    }[target_platform]
 
 
 def ollama_request(host: str, endpoint: str, payload: dict, timeout: float) -> dict:

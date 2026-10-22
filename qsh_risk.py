@@ -11,9 +11,20 @@ from pathlib import Path
 from qsh_backends import DEFAULT_OLLAMA_HOST, BackendError, ollama_request
 
 
-DEFAULT_RISK_MODEL = "kev:0.8b-mxfp8"
+LINUX_RISK_MODEL = "kev:0.8b-q8_0"
+MACOS_RISK_MODEL = "kev:0.8b-mxfp8"
+# Preserve the Linux value for callers that do not select a target platform.
+DEFAULT_RISK_MODEL = LINUX_RISK_MODEL
 RULES_PATH = Path(__file__).resolve().with_name("qsh-risk-rules.json")
 RISK_LEVELS = ("LOW", "MEDIUM", "HIGH", "CRITICAL")
+
+
+def default_risk_model(target_platform: str) -> str:
+    """Return the bundled Kev model for a supported target."""
+    return {
+        "linux": LINUX_RISK_MODEL,
+        "macos": MACOS_RISK_MODEL,
+    }[target_platform]
 
 
 def is_forced_recursive_removal(command: str) -> bool:
@@ -82,12 +93,16 @@ class KevRiskReviewer:
                 raise ValueError("Risk rules need valid risk levels and unique ids.")
             seen.add(rule["id"])
 
-    def evaluate(self, command: str, request: str, cwd: Path, timeout: float) -> RiskReview:
+    def evaluate(
+        self, command: str, request: str, cwd: Path, timeout: float, target_platform: str = "linux",
+    ) -> RiskReview:
+        platform_name = {"linux": "Linux", "macos": "macOS"}[target_platform]
         questions = {
             rule["id"]: {
                 "type": "noul",
                 "instructions": (
-                    f"Does executing the supplied macOS POSIX sh command match this rule: {rule['description']}? "
+                    f"Does executing the supplied {platform_name} POSIX sh command match this rule: "
+                    f"{rule['description']}? "
                     f"{self.policy['instructions']}"
                 ),
                 "criteria": {"true": rule["when_true"], "false": rule["when_false"]},
@@ -97,7 +112,8 @@ class KevRiskReviewer:
         payload = {
             "model": self.model,
             "state": {
-                "shell": "macOS POSIX sh", "cwd": str(cwd), "command": command, "user_request": request,
+                "shell": f"{platform_name} POSIX sh", "cwd": str(cwd), "command": command,
+                "user_request": request,
             },
             "questions": questions,
             "keep_alive": 0,

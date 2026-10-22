@@ -3,14 +3,16 @@
     "additionalProperties": false,
     "properties": {
         "command": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         },
         "risk": {
             "type": "string",
             "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
         },
         "explanation": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         }
     },
     "required": ["command", "risk", "explanation"]

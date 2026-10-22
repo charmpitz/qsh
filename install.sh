@@ -9,10 +9,17 @@ QSH_REPO="${QSH_REPO:-https://github.com/charmpitz/qsh.git}"
 QSH_DIR="${QSH_DIR:-$HOME/qsh}"
 QSH_BIN_DIR="${QSH_BIN_DIR:-$HOME/.local/bin}"
 OLLAMA_MIN_VERSION="0.40.4"
-MODELS="qwen2.5-coder:1.5b-instruct-q4_K_S kev:0.8b-mxfp8"
 
 say() { printf '%s\n' "$*"; }
 fail() { printf 'qsh install: %s\n' "$*" >&2; exit 1; }
+
+select_models() {
+    case "$(uname -s)" in
+        Linux) MODELS="qwen2.5:3b-instruct kev:0.8b-q8_0" ;;
+        Darwin) MODELS="qwen2.5-coder:1.5b-instruct-q4_K_S kev:0.8b-mxfp8" ;;
+        *) fail "only Linux and macOS are supported" ;;
+    esac
+}
 
 absolute() {
     case "$1" in
@@ -106,6 +113,7 @@ main() {
     QSH_DIR=$(absolute "$QSH_DIR")
     QSH_BIN_DIR=$(absolute "$QSH_BIN_DIR")
 
+    select_models
     check_dependencies
     check_install_dir
     check_bin_dir

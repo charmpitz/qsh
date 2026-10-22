@@ -1,6 +1,6 @@
 {
   "evaluated_at": "2026-10-20T08:16:43.288549+00:00",
-  "model": "kev:0.8b-mxfp8",
+  "model": "kev:0.8b-q8_0",
   "rules_sha256": "85e608673648719fcad36157314a0cd64eca6a85e690e57a3757d0d5d6ce5de5",
   "cases_sha256": "1b5e946bc3d954ce09ee2dde9a8c77285a002869317f4eeb1b2480bd5ae89e26",
   "implementation_sha256": {
@@ -29,7 +29,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -58,7 +58,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -87,7 +87,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -116,7 +116,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -152,7 +152,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -206,7 +206,7 @@
       "kev_risk": "MEDIUM",
       "final_risk": "MEDIUM",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "MEDIUM",
         "findings": [
           {
@@ -242,7 +242,7 @@
       "kev_risk": "MEDIUM",
       "final_risk": "MEDIUM",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "MEDIUM",
         "findings": [
           {
@@ -278,7 +278,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -307,7 +307,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -355,7 +355,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -397,7 +397,7 @@
       "kev_risk": "HIGH",
       "final_risk": "HIGH",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "HIGH",
         "findings": [
           {
@@ -439,7 +439,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -487,7 +487,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -535,7 +535,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -577,7 +577,7 @@
       "kev_risk": "HIGH",
       "final_risk": "HIGH",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "HIGH",
         "findings": [
           {
@@ -625,7 +625,7 @@
       "kev_risk": "HIGH",
       "final_risk": "HIGH",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "HIGH",
         "findings": [
           {
@@ -661,7 +661,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -715,7 +715,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -763,7 +763,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -805,7 +805,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -841,7 +841,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -889,7 +889,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -937,7 +937,7 @@
       "kev_risk": "HIGH",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "HIGH",
         "findings": [
           {
@@ -973,7 +973,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -1015,7 +1015,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -1057,7 +1057,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -1111,7 +1111,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -1159,7 +1159,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {
@@ -1195,7 +1195,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -1224,7 +1224,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -1253,7 +1253,7 @@
       "kev_risk": "LOW",
       "final_risk": "LOW",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "LOW",
         "findings": [],
         "probabilities": {
@@ -1282,7 +1282,7 @@
       "kev_risk": "CRITICAL",
       "final_risk": "CRITICAL",
       "review": {
-        "model": "kev:0.8b-mxfp8",
+        "model": "kev:0.8b-q8_0",
         "risk": "CRITICAL",
         "findings": [
           {

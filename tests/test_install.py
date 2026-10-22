@@ -26,6 +26,10 @@ case "$1" in
 esac
 """
 
+FAKE_UNAME = """#!/bin/sh
+echo "${TEST_UNAME:-Linux}"
+"""
+
 class InstallTests(unittest.TestCase):
     def setUp(self):
         directory = tempfile.TemporaryDirectory(prefix="qsh-install-")
@@ -37,7 +41,7 @@ class InstallTests(unittest.TestCase):
         self.bin_dir = self.root / "bin"
         stubs = self.root / "stubs"
         stubs.mkdir()
-        for name, script in (("git", FAKE_GIT), ("ollama", FAKE_OLLAMA)):
+        for name, script in (("git", FAKE_GIT), ("ollama", FAKE_OLLAMA), ("uname", FAKE_UNAME)):
             (stubs / name).write_text(script, encoding="utf-8")
             (stubs / name).chmod(0o755)
         self.env = os.environ.copy()
@@ -67,8 +71,8 @@ class InstallTests(unittest.TestCase):
         self.assertEqual(Path(os.readlink(link)), self.install_dir / "qsh.py")
         self.assertTrue(os.access(link, os.X_OK))
         log = self.log.read_text()
-        self.assertIn("ollama pull qwen2.5-coder:1.5b-instruct-q4_K_S", log)
-        self.assertIn("ollama pull kev:0.8b-mxfp8", log)
+        self.assertIn("ollama pull qwen2.5:3b-instruct", log)
+        self.assertIn("ollama pull kev:0.8b-q8_0", log)
         self.assertIn("is not on your PATH", result.stdout)
 
     def test_reinstall_updates_existing_checkout(self):
@@ -76,6 +80,13 @@ class InstallTests(unittest.TestCase):
         result = self.install()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("pull --ff-only", self.log.read_text())
+
+    def test_macos_installs_original_models(self):
+        result = self.install(TEST_UNAME="Darwin")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        log = self.log.read_text()
+        self.assertIn("ollama pull qwen2.5-coder:1.5b-instruct-q4_K_S", log)
+        self.assertIn("ollama pull kev:0.8b-mxfp8", log)
 
     def test_old_ollama_fails_before_writing(self):
         result = self.install(TEST_OLLAMA_VERSION="0.40.3")
